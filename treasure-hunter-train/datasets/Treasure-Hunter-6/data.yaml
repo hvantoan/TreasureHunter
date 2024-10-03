@@ -1,0 +1,23 @@
+names:
+- ad
+- astromophy
+- blood_bottle
+- earth_square
+- grass
+- gray_square
+- green_square
+- mosqui
+- mouse
+- player
+- tree
+- turtle
+nc: 12
+roboflow:
+  license: MIT
+  project: treasure-hunter
+  url: https://universe.roboflow.com/hotaai/treasure-hunter/dataset/6
+  version: 6
+  workspace: hotaai
+test: test/images
+train: train/images
+val: valid/images
