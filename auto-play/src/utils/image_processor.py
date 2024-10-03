@@ -1,19 +1,15 @@
 import cv2 as cv
-import numpy as np
-from ultralytics import YOLO  # New YOLOv8 library
+from ultralytics import YOLO  
 
 class ImageProcessor:
     def __init__(self, img_size, model_path):
         self.W = img_size[0]
         self.H = img_size[1]
-        self.model = YOLO('best.pt')  # Load YOLOv8 model
+        self.model = YOLO(model=model_path) 
         
     def proccess_image(self, img):
-        # Resize the image to model input size (640x640 for YOLOv8 by default)
-        img_resized = cv.resize(img, (640, 640))
-        
         # Perform inference
-        results = self.model(img_resized)[0]
+        results = self.model(img, conf=0.8)[0]
         
         # Extract predictions
         coordinates = self.get_coordinates(results)
@@ -24,12 +20,14 @@ class ImageProcessor:
         return coordinates
 
     def get_coordinates(self, results):
+        desired_classes = [3, 5, 6]
         coordinates = []
         for r in results.boxes:
             x1, y1, x2, y2 = map(int, r.xyxy[0])  # Bounding box coordinates
             class_id = int(r.cls[0])  # Class ID
             confidence = r.conf[0]  # Confidence score
-            
+            if class_id not in desired_classes:
+                continue
             coordinates.append({
                 'x': x1, 
                 'y': y1, 
@@ -47,7 +45,6 @@ class ImageProcessor:
             y = coordinate['y']
             w = coordinate['w']
             h = coordinate['h']
-            classID = coordinate['class']
             class_name = coordinate['class_name']
             confidence = coordinate['confidence']
             

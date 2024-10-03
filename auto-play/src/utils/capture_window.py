@@ -59,3 +59,5 @@ class WindowCapture:
     
     def get_window_size(self):
         return (self.w, self.h)
+    
+    

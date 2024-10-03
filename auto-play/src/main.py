@@ -1,16 +1,10 @@
 from  utils.capture_window import WindowCapture
 from utils.image_processor import ImageProcessor
-import cv2 as cv
-import matplotlib.pyplot as plt
-from PIL import Image
 from time import sleep
-import keyboard
-import os
-from ultralytics import YOLO
-import numpy as np
+import cv2 as cv
 
 window_name = "LDPlayer"
-model_path = "../"
+model_path = "D:\\Workspace\\TreasureHunter\\auto-play\\src\\best.pt"
 
 wincap = WindowCapture(window_name)
 improc = ImageProcessor(wincap.get_window_size(), model_path)
@@ -27,10 +21,10 @@ while(True):
     
     for coordinate in coordinates:
         print(coordinate)
-    print()
+    print("---------------  NEXT FRAME  ---------------")
     
     # If you have limited computer resources, consider adding a sleep delay between detections.
-    # sleep(0.2)
+    sleep(1)
 
 print('Finished.')
 

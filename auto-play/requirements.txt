@@ -1,2 +1,7 @@
 opencv-python
 Pillow
+pywin32
+ultralytics
+numpy
+torch
+time
