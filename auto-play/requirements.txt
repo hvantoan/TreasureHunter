@@ -7,3 +7,8 @@ torch
 time
 ctypes
 wintypes
+math
+pandas
+scipy
+matplotlib
+seaborn

@@ -9,7 +9,6 @@ class WindowCapture:
     h = 0
     hwnd = None
     
-
     def __init__(self, window_name, scale = 1):
         self.hwnd = win32gui.FindWindow(None, window_name)
         if not self.hwnd:
@@ -60,10 +59,4 @@ class WindowCapture:
     
     def get_window_size(self):
         return (self.w, self.h)
-    
-    def send_key(self, key,press_time = 0.1):
-        key_code = ord(key.upper())
-        win32api.PostMessage(self.hwnd, win32con.WM_KEYDOWN, key_code, 0)
-        sleep(press_time)
-        win32api.PostMessage(self.hwnd, win32con.WM_KEYUP, key_code, 0)
     
