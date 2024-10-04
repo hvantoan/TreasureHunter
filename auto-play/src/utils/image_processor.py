@@ -3,23 +3,26 @@ from ultralytics import YOLO
 
 class ImageProcessor:
     def __init__(self, img_size, model_path):
-        self.W = img_size[0]
-        self.H = img_size[1]
+        cv.namedWindow('DETECTED OBJECTS', cv.WINDOW_NORMAL)
+        cv.resizeWindow('DETECTED OBJECTS', img_size[0], img_size[1])
         self.model = YOLO(model=model_path) 
         
-    def proccess_image(self, img):
+    def process_image(self, img):
         # Perform inference
-        results = self.model(img, conf=0.8)[0]
+        results = self.model(img, conf=0.9)[0]
         
+        # Get the center of the image
+        center_x, center_y = self.get_center(img)
+
         # Extract predictions
-        coordinates = self.get_coordinates(results)
-        
+        coordinates = self.get_coordinates(results, center_x=center_x, center_y=center_y)
+
         # Draw identified objects
         self.draw_identified_objects(img, coordinates)
 
         return coordinates
 
-    def get_coordinates(self, results):
+    def get_coordinates(self, results, center_x, center_y):
         desired_classes = [3, 5, 6]
         coordinates = []
         for r in results.boxes:
@@ -28,6 +31,8 @@ class ImageProcessor:
             confidence = r.conf[0]  # Confidence score
             if class_id not in desired_classes:
                 continue
+            
+            center_class = (x1 + x2) // 2, (y1 + y2) // 2
             coordinates.append({
                 'x': x1, 
                 'y': y1, 
@@ -35,7 +40,9 @@ class ImageProcessor:
                 'h': y2 - y1, 
                 'class': class_id, 
                 'confidence': confidence, 
-                'class_name': self.model.names[class_id]
+                'class_name': self.model.names[class_id],
+                'name'
+                "distance": ((center_x - center_class[0]) ** 2 + (center_y - center_class[1]) ** 2) ** 0.5
             })
         return coordinates
 
@@ -53,14 +60,16 @@ class ImageProcessor:
             text = f"{class_name} {confidence:.2f}"
             cv.putText(img, text, (x, y - 10), cv.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
         
+        # Create rectangle around the center of the image, color: red
+        center_x, center_y = self.get_center(img)
+        cv.rectangle(img, (center_x - 5, center_y - 5), (center_x + 5, center_y + 5), (0, 0, 255), 2)
+
+        
         cv.imshow('DETECTED OBJECTS', img)
+        cv.resizeWindow('DETECTED OBJECTS', img.shape[1], img.shape[0])
 
-# Usage example:
-# Create the ImageProcessor object and pass the image size and YOLOv8 model path
-# processor = ImageProcessor((1280, 720), 'yolov8n.pt')
-
-# img = cv.imread('input_image.jpg')
-# coordinates = processor.proccess_image(img)
-
-# cv.waitKey(0)
-# cv.destroyAllWindows()
+    def get_center(self, img):
+        height, width, _ = img.shape
+        center_x = width // 2
+        center_y = height // 2
+        return center_x, center_y

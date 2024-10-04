@@ -5,3 +5,5 @@ ultralytics
 numpy
 torch
 time
+ctypes
+wintypes

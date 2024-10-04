@@ -1,5 +1,5 @@
 import numpy as np
-import win32gui, win32ui, win32con
+import win32gui, win32ui, win32con, win32api
 from PIL import Image
 from time import sleep
 import os
@@ -8,22 +8,23 @@ class WindowCapture:
     w = 0
     h = 0
     hwnd = None
+    
 
-    def __init__(self, window_name):
+    def __init__(self, window_name, scale = 1):
         self.hwnd = win32gui.FindWindow(None, window_name)
         if not self.hwnd:
             raise Exception('Window not found: {}'.format(window_name))
 
         window_rect = win32gui.GetWindowRect(self.hwnd)
-        self.w = window_rect[2] - window_rect[0]
-        self.h = window_rect[3] - window_rect[1]
 
-        border_pixels = 8
-        titlebar_pixels = 30
+        self.w = int((window_rect[2] - window_rect[0]) * scale)
+        self.h = int((window_rect[3] - window_rect[1]) * scale)
+        border_pixels = 1
+        bar_height = 33
         self.w = self.w - (border_pixels * 2)
-        self.h = self.h - titlebar_pixels - border_pixels
+        self.h = self.h - bar_height - border_pixels
         self.cropped_x = border_pixels
-        self.cropped_y = titlebar_pixels
+        self.cropped_y = bar_height
 
     def get_screenshot(self):
         wDC = win32gui.GetWindowDC(self.hwnd)
@@ -60,4 +61,9 @@ class WindowCapture:
     def get_window_size(self):
         return (self.w, self.h)
     
+    def send_key(self, key,press_time = 0.1):
+        key_code = ord(key.upper())
+        win32api.PostMessage(self.hwnd, win32con.WM_KEYDOWN, key_code, 0)
+        sleep(press_time)
+        win32api.PostMessage(self.hwnd, win32con.WM_KEYUP, key_code, 0)
     
