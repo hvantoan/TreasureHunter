@@ -5,11 +5,14 @@ from utils.calculator import Calculator as cal
 class ImageProcessor:
     
     def __init__(self, model_path, velocity = 0.1):
-        cv.namedWindow('Treasure Hunter BOT', cv.WINDOW_AUTOSIZE)
+        # cv.namedWindow('Treasure Hunter BOT', cv.WINDOW_AUTOSIZE)
         self.model = YOLO(model=model_path)
         self.velocity = velocity
         
     def process_image(self, img):
+        # get image height and width
+        height, _, _ = img.shape
+        
         # Perform inference
         results = self.model(img, conf=0.9)[0]
         
@@ -21,13 +24,13 @@ class ImageProcessor:
         
         # Best target
         coordinate = cal.find_nearly_distance(coordinates)        
-        b = coordinate['center']    
+        b = coordinate['center']  
         
         # Find actions to move from point A to point B
-        actions = cal.find_action(a, b, self.velocity)
+        actions = cal.find_action(height, a, b, self.velocity)
         
         # Draw identified objects
-        self.draw_identified_objects(img, coordinates)
+        # self.draw_identified_objects(img, coordinates)
         
         return actions
 

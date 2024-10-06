@@ -1,20 +1,18 @@
 from utils.capture_window import WindowCapture
 from utils.image_processor import ImageProcessor
+from utils.adb_control import AdbHelper
 from time import sleep
 import cv2 as cv
-from utils.game_center import GameCenter
-
 
 window_name = "LDPlayer"
 model_path = "D:\\Workspace\\TreasureHunter\\auto-play\\src\\best.pt"
 
-velocity = 100
-sleep_time = 2
+velocity = 180
+sleep_time = 2.5
 
 window_capture = WindowCapture(window_name)
 image_processor = ImageProcessor(model_path, velocity)
-game_center = GameCenter(window_capture.hwnd)
-
+adb_control = AdbHelper("emulator-5554")
 
 
 while(True):
@@ -24,8 +22,10 @@ while(True):
         cv.destroyAllWindows()
         break
 
-    actions = image_processor.process_image(ss)
-    game_center.move(actions)
+    f_point, t_point, duration = image_processor.process_image(ss)
+    adb_control.swipe(f_point, t_point, int(duration))    
+    print("Swipe from {} to {} in {} ms".format(f_point, t_point, int(duration)))
+    
     sleep(sleep_time)
     
 print('Finished.')

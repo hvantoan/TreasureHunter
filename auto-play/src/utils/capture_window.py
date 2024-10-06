@@ -9,7 +9,7 @@ class WindowCapture:
     h = 0
     hwnd = None
     
-    def __init__(self, window_name, scale = 1):
+    def __init__(self, window_name, scale = 1.25):
         self.hwnd = win32gui.FindWindow(None, window_name)
         if not self.hwnd:
             raise Exception('Window not found: {}'.format(window_name))
