@@ -2,3 +2,6 @@
 /.env
 /auto-play/src/utils/__pycache__
 /auto-play/images
+/images
+/auto-play/src/build
+/auto-play/src/dist

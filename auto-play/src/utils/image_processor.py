@@ -14,7 +14,7 @@ class ImageProcessor:
         height, _, _ = img.shape
         
         # Perform inference
-        results = self.model(img, conf=0.9)[0]
+        results = self.model(img, conf=0.8)[0]
         
         # Get the center of the image
         a = self.get_center(img)
@@ -30,7 +30,7 @@ class ImageProcessor:
         actions = cal.find_action(height, a, b, self.velocity)
         
         # Draw identified objects
-        # self.draw_identified_objects(img, coordinates)
+        # self.draw_identified_objects(img, coordinates, actions)
         
         return actions
 
@@ -59,7 +59,7 @@ class ImageProcessor:
             
         return coordinates
 
-    def draw_identified_objects(self, img, coordinates, draw_all=False):
+    def draw_identified_objects(self, img, coordinates, actions, draw_all=False):
         # Create rectangle around the center of the image, color: red
         (center_x, center_y) = self.get_center(img)
         cv.rectangle(img, (center_x - 1, center_y - 1), (center_x + 1, center_y + 1), (0, 0, 255), 2)
@@ -68,6 +68,10 @@ class ImageProcessor:
         coordinate = cal.find_nearly_distance(coordinates)        
         point = coordinate['center']    
         cv.line(img, (center_x, center_y), point, (255, 0, 0), 2)
+        
+        # Draw swipe action
+        from_point, to_point, _ = actions
+        cv.line(img, from_point, to_point, (0, 0, 255), 2)
         
         # Draw horizontal line at the center of the image
         self.draw_right_triangle(img, (center_x, center_y), point)
